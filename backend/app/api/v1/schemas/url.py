@@ -9,3 +9,6 @@ class UrlModel(BaseModel):
     shorten_url: str | None = None
     created_at: datetime | None = datetime.now()
     updated_at: datetime | None = datetime.now()
+
+class Url(BaseModel):
+    url: str
