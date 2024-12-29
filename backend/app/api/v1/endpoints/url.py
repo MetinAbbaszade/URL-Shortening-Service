@@ -26,7 +26,7 @@ async def get_url(shorten_url: str, db: AsyncSession = Depends(get_db)):
     url: urlobject = await facade.get_url(url_id=shorten_url, db=db)
     if not url:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail='Url not found'
         )
     await facade.update_stat(url_id=url.get('id'), db=db)
@@ -39,7 +39,7 @@ async def get_stats(shorten_url: str, db: AsyncSession = Depends(get_db)):
 
     if not url:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail='Url not found'
         )
     
