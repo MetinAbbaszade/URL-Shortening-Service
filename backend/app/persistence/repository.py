@@ -8,6 +8,9 @@ class MemoryRepository(IRepository):
         self.model = model
     
     async def get(self, obj_id, session: AsyncSession):
+        return session.execute(select(self.model).where(obj_id == self.model.shorten_url)).scalars().first()
+    
+    async def get_by_id(self, obj_id, session: AsyncSession):
         try:
             if isinstance(obj_id, str):
                 obj_id = UUID(obj_id)
@@ -15,10 +18,10 @@ class MemoryRepository(IRepository):
                 pass
         except:
             raise ValueError('Id not suitable for UUID')
-        return session.execute(select(self.model).where(obj_id == self.model.id)).scalars().first()
+        
+        object = session.execute(select(self.model).where(self.model.id == obj_id))
+        return object.scalars().first()
 
-    async def get_all(self, session: AsyncSession):
-        return session.execute(select(self.model)).scalars().all()
     
     async def add(self, obj, session: AsyncSession):
         session.add(obj)
@@ -28,9 +31,9 @@ class MemoryRepository(IRepository):
         return obj
 
     async def update(self, obj_id, obj, session: AsyncSession):
-        data = obj.dict()
+        
         existing_obj = await self.get(obj_id=obj_id, session=session)
-        for key, value in data.items():
+        for key, value in obj.items():
             setattr(existing_obj, key, value)
 
         session.commit()
@@ -39,7 +42,17 @@ class MemoryRepository(IRepository):
         return existing_obj
     
     async def delete(self, obj_id, session: AsyncSession):
-        existing_obj = await self.get(obj_id=obj_id, session=session)
+        existing_obj = await self.get_by_id(obj_id=obj_id, session=session)
 
         session.delete(existing_obj)
         session.commit()
+
+    async def update_stats(self, obj_id, session: AsyncSession):
+        existing_obj = await self.get_by_id(obj_id=obj_id, session=session)
+        data = existing_obj.dict()
+        for key, value in data.items():
+            if key == 'access_account':
+                setattr(existing_obj, key, value + 1)
+
+        session.commit()
+        session.refresh(existing_obj)

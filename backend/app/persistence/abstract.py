@@ -2,21 +2,17 @@ from abc import ABC, abstractmethod
 
 class IRepository(ABC):
     @abstractmethod
-    def get(self, obj_id, db):
-        ...
-
-    @abstractmethod
-    def get_all(self, db):
+    async def get(self, obj_id, db):
         ...
     
     @abstractmethod
-    def add(self, obj, db):
+    async def add(self, obj, db):
         ...
 
     @abstractmethod
-    def update(self, obj_id, obj, db):
+    async def update(self, obj_id, obj, db):
         ...
 
     @abstractmethod
-    def delete(self, obj_id, db):
+    async def delete(self, obj_id, db):
         ...

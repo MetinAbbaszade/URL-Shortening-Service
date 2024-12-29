@@ -8,7 +8,7 @@ class URL(SQLModel, table=True):
     shorten_url: str = Field(description='Shorten Url')
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
-    access_account: int = Field(description='Access Account')
+    access_account: int = Field(description='Access Account', default=0)
 
     def update(self, data):
         for key,value in data.items():
